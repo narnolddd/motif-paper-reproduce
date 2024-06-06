@@ -1,3 +1,5 @@
+# Save graph file as a binary to make for very fast reload for other experiments.
+
 import raphtory as rp
 import pandas as pd
 import pickle
@@ -10,4 +12,4 @@ df["Datetime_updated_seconds"]=df["Datetime_updated_seconds"].apply(lambda t: in
 
 # read into raphtory graph
 g.load_edges_from_pandas(df,src="Buyer_address",dst="Seller_address",time="Datetime_updated_seconds")
-g.save_to_file("graph_files/nfts.rp")
+g.save_to_file("graph_files/nfts.rp") 
