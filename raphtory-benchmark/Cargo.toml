@@ -1,0 +1,8 @@
+[package]
+name = "raphtory-benchmark"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+raphtory = { version = "0.9.3", features = ["io"] }
+serde = "1.0.203"

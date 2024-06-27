@@ -1,2 +1,6 @@
 *.rp
 *.csv
+
+raphtory-benchmark/target
+*.json
+*.txt
