@@ -15,8 +15,6 @@ struct Edge {
 
 fn run_motifs_single() {
     let args: Vec<String> = env::args().collect();
-    let data_dir = Path::new(args.get(1).expect("No NFT data directory provided"));
-    let now1 = Instant::now();
     let g = load_graph();
 
     let now2 = Instant::now();
@@ -36,7 +34,7 @@ fn run_motifs_multi() {
         let now = Instant::now();
         let g = load_graph();
         let motifs = temporal_three_node_motif_multi(&g, deltas, None);
-        println!("{},{}",i * 24, now.elapsed().as_millis())
+        println!("{},{}",(i+1) * 24, now.elapsed().as_millis())
     }
 }
 
@@ -56,7 +54,7 @@ fn load_graph() -> Graph {
 }
 
 fn main() {
-    for i in 0..1 {
+    for _ in 0..10 {
         run_motifs_multi();
     }
 }
