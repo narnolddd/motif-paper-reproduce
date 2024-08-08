@@ -4,7 +4,7 @@ use raphtory::{
 // use raphtory::graph_loader;
 
 use serde::Deserialize;
-use std::{env, path::Path, time::Instant};
+use std::{env, fs::File, io::Write, path::Path, time::Instant};
 
 #[derive(Deserialize, std::fmt::Debug)]
 struct Edge {
@@ -13,20 +13,7 @@ struct Edge {
     time: i64,
 }
 
-fn run_motifs_single() {
-    let args: Vec<String> = env::args().collect();
-    let g = load_graph();
-
-    let now2 = Instant::now();
-
-    let motifs = global_temporal_three_node_motif(&g, 86400, None);
-    println!(
-        "Counting motifs took {} milliseconds",
-        now2.elapsed().as_millis()
-    );
-}
-
-fn run_motifs_multi() {
+fn run_motifs_multi(file: &mut File) {
     for i in 0..10 {
         let deltas: Vec<i64> = (0..i)
             .flat_map(|j| (0..24).map(move |k| (i * 86400 + k * 3600) as i64))
@@ -34,7 +21,21 @@ fn run_motifs_multi() {
         let now = Instant::now();
         let g = load_graph();
         let motifs = temporal_three_node_motif_multi(&g, deltas, None);
-        println!("{},{}",(i+1) * 24, now.elapsed().as_millis())
+        writeln!(file, "{},{}", (i+1) * 24, now.elapsed().as_millis())
+            .expect("Failed to write to file");
+    }
+}
+
+fn run_motifs_multi_small(file: &mut File) {
+    for i in 0..24 {
+        let deltas : Vec<i64> = (0..i)
+        .map(|k| k * 3600)
+        .collect();
+        let now = Instant::now();
+        let g = load_graph();
+        let motifs = temporal_three_node_motif_multi(&g, deltas, None);
+        writeln!(file, "{},{}", (i+1), now.elapsed().as_millis())
+            .expect("Failed to write to file");
     }
 }
 
@@ -54,7 +55,11 @@ fn load_graph() -> Graph {
 }
 
 fn main() {
-    for _ in 0..10 {
-        run_motifs_multi();
-    }
+    let args: Vec<String> = env::args().collect();
+    let ex_string = args.get(2).expect("No experiment string provided");
+    let file_str = "raphtory-output".to_owned() + ex_string + ".dat";
+    let mut file = File::create(file_str)
+        .expect("Failed to create file");
+
+    run_motifs_multi_small(&mut file);
 }
